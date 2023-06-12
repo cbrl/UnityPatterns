@@ -1,0 +1,16 @@
+{
+    "name": "cbrl.Patterns.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "Textus.SerializeReferenceUI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
