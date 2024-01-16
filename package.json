@@ -1,9 +1,9 @@
 {
 	"name": "com.cbrl.patterns",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"displayName": "Patterns",
 	"description": "A framework for composing reusable patterns from arbitrary actions",
-	"unity": "2021.3",
+	"unity": "2022.3",
 	"references": [
 		"com.textus-games.serialized-reference-ui"
 	]
