@@ -12,13 +12,13 @@ namespace Patterns.Actions
 
         public override IEnumerator Run(PatternBehavior behavior)
         {
-            yield return pattern.Run(behavior);
+            yield return pattern.Clone().Run(behavior);
         }
     }
 
 
     [System.Serializable]
-    public class ActionGroup : Action
+    public class ActionList : Action
     {
         [SerializeReference]
         [SerializeReferenceButton]
@@ -28,6 +28,11 @@ namespace Patterns.Actions
         {
             foreach (var action in actions)
             {
+                if (!action.enabled)
+                {
+                    continue;
+                }
+
                 yield return action.Run(behavior);
             }
         }
@@ -65,30 +70,20 @@ namespace Patterns.Actions
 
 
     [System.Serializable]
-    public class RepeatActions : ActionGroup
+    public class RepeatActions : ActionList
     {
         [SerializeField]
         public bool repeatForever = true;
 
-        // Number of times to repeat. Ignored if repeatForever is true.
         [SerializeField]
+        [Tooltip("Number of times to repeat. Ignored if repeatForever is true.")]
         public int repeatCount = 1;
 
         public override IEnumerator Run(PatternBehavior behavior)
         {
-            if (repeatForever)
+            for (int i = 0; (i < repeatCount) || repeatForever; i++)
             {
-                while (true)
-                {
-                    yield return base.Run(behavior);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < repeatCount; i++)
-                {
-                    yield return base.Run(behavior);
-                }
+                yield return base.Run(behavior);
             }
         }
     }
@@ -134,7 +129,7 @@ namespace Patterns.Actions
 
             if (pattern != null)
             {
-                obj.AddComponent<PatternBehavior>().pattern = pattern;
+                obj.AddComponent<PatternBehavior>().pattern = pattern.Clone();
             }
 
             // The PatternBehavior will not automatically run the pattern since it was null when the component was created
