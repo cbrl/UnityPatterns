@@ -58,7 +58,6 @@ namespace Patterns
     [System.Serializable]
     public abstract class Action
     {
-        [SerializeField]
         public bool enabled = true;
 
         [SerializeField]

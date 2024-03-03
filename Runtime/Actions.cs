@@ -7,7 +7,6 @@ namespace Patterns.Actions
     [System.Serializable]
     public class RunPatternAction : Action
     {
-        [SerializeField]
         public Pattern pattern;
 
         public override IEnumerator Run(PatternBehavior behavior)
@@ -42,11 +41,9 @@ namespace Patterns.Actions
     [System.Serializable]
     public class RepeatPattern : RunPatternAction
     {
-        [SerializeField]
         public bool repeatForever = true;
 
-        // Number of times to repeat. Ignored if repeatForever is true.
-        [SerializeField]
+        [Tooltip("Number of times to repeat. Ignored if repeatForever is true.")]
         public int repeatCount = 1;
 
         public override IEnumerator Run(PatternBehavior behavior)
@@ -72,10 +69,8 @@ namespace Patterns.Actions
     [System.Serializable]
     public class RepeatActions : ActionList
     {
-        [SerializeField]
         public bool repeatForever = true;
 
-        [SerializeField]
         [Tooltip("Number of times to repeat. Ignored if repeatForever is true.")]
         public int repeatCount = 1;
 
@@ -92,7 +87,6 @@ namespace Patterns.Actions
     [System.Serializable]
     public class WaitAction : Action
     {
-        [SerializeField]
         public float waitSeconds = 0;
 
         public override IEnumerator Run(PatternBehavior behavior)
@@ -105,26 +99,42 @@ namespace Patterns.Actions
     [System.Serializable]
     public class SpawnAction : Action
     {
-        [SerializeField]
         public GameObject prefab;
 
-        // An optional pattern to give the newly spawned object
-        [SerializeField]
+        [Tooltip("An optional pattern to give the newly spawned object")]
         public Pattern pattern = null;
 
-        [SerializeField]
-        public Vector3 offset = new();
+		[Tooltip("The offset of the spawned object relative to the object this pattern is attached to.")]
+        public Vector3 offset = Vector3.zero;
 
-        [SerializeField]
-        public Vector3 rotation = new();
+		[Tooltip("The amount by which the offset will increase on each iteration, if this action is part of a loop.")]
+		public Vector3 offsetIncrement = Vector3.zero;
+
+		[Tooltip("The maximum offset of the spawned object.")]
+		public Vector3 offsetMax = Vector3.positiveInfinity;
+
+		[Tooltip("The rotation of the spawned object relative to the object this pattern is attached to.")]
+        public Vector3 rotation = Vector3.zero;
+
+		[Tooltip("The amount by which the rotation will increase on each iteration, if this action is part of a loop.")]
+		public Vector3 rotationIncrement = Vector3.zero;
+
+		[Tooltip("The maximum rotation of the spawned object.")]
+		public Vector3 rotationMax = Vector3.positiveInfinity;
+
+		private int loopCount = 0;
 
         public override IEnumerator Run(PatternBehavior behavior)
 		{
+
             var obj = Object.Instantiate(prefab);
 
+			var newOffset = Vector3.Min(offset + (offsetIncrement * loopCount), offsetMax);
+			var newRotation = Vector3.Min(rotation + (rotationIncrement * loopCount), rotationMax);
+
             obj.transform.SetPositionAndRotation(
-                behavior.transform.position + offset,
-                behavior.transform.rotation * Quaternion.Euler(rotation)
+                behavior.transform.position + newOffset,
+                behavior.transform.rotation * Quaternion.Euler(newRotation)
             );
 
             if (pattern != null)
@@ -138,6 +148,8 @@ namespace Patterns.Actions
                 spawnedBehavior.Run();
             }
 
+			loopCount += 1;
+
             yield return null;
 		}
 	}
@@ -146,11 +158,9 @@ namespace Patterns.Actions
     [System.Serializable]
     public class SetVelocityAction : Action
     {
-        [SerializeField]
         public float velocity = 0.0f;
 
-        // The time it takes for the velocity to change. Set to <= 0 for instant change.
-        [SerializeField]
+        [Tooltip("The time it takes for the velocity to change. Set to <= 0 for instant change.")]
         public float timeToChange = 0.0f;
 
         public override IEnumerator Run(PatternBehavior behavior)
@@ -158,7 +168,7 @@ namespace Patterns.Actions
             if (behavior.body != null)
             {
                 var timeFactor = 1.0f / System.Math.Max(0.0f, timeToChange);
-                
+
                 // If infinite timeFactor (instant change), just set the new velocity.
                 if (float.IsInfinity(timeFactor))
                 {
@@ -172,12 +182,42 @@ namespace Patterns.Actions
                     while (elapsedTime < timeToChange)
                     {
                         var forward = Vector3.Normalize(behavior.transform.forward);
-                        behavior.body.velocity = forward * Mathf.Lerp(initVelocity, velocity, elapsedTime * timeFactor);
+						var lerpPercent = System.Math.Max(elapsedTime * timeFactor, 1.0f);
+
+                        behavior.body.velocity = forward * Mathf.Lerp(initVelocity, velocity, lerpPercent);
+
                         elapsedTime += Time.deltaTime;
+
                         yield return new WaitForFixedUpdate();
                     }
+
+					// Set final velocity. While loop above can skip last increment.
+					behavior.body.velocity = Vector3.Normalize(behavior.transform.forward) * velocity;
                 }
             }
+
+            yield return null;
+        }
+    }
+
+
+    [System.Serializable]
+    public class TargetPositionAction : Action
+    {
+        public Vector3 target = Vector3.zero;
+
+        [Tooltip("The maximum rate at which the object can turn towards the target")]
+        public float maxDegreesPerSecond = 0.0f;
+
+        public override IEnumerator Run(PatternBehavior behavior)
+        {
+            var toTargetVector = target - behavior.transform.position;
+            var toTargetQuat = Quaternion.LookRotation(toTargetVector);
+
+            behavior.transform.rotation = Quaternion.RotateTowards(behavior.transform.rotation, toTargetQuat, maxDegreesPerSecond * Time.deltaTime);
+
+            behavior.body.velocity = Vector3.Normalize(behavior.transform.forward) * 10;
+
             yield return null;
         }
     }
@@ -186,11 +226,9 @@ namespace Patterns.Actions
     [System.Serializable]
     public class TargetObjectAction : Action
     {
-        [SerializeField]
         public GameObject target;
 
         // Maximum rate at which the object can turn towards the target
-        [SerializeField]
         public float maxDegreesPerSecond = 0.0f;
 
         public override IEnumerator Run(PatternBehavior behavior)

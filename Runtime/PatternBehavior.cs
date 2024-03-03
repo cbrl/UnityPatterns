@@ -12,7 +12,6 @@ namespace Patterns
     [System.Serializable]
     public class PatternBehavior : MonoBehaviour
     {
-        [SerializeField]
         public Pattern pattern;
 
         // Will reference the owning object's RigidBody, if present.
