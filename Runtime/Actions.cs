@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 
@@ -237,8 +237,6 @@ namespace Patterns.Actions
             var toTargetQuat = Quaternion.LookRotation(toTargetVector);
 
             behavior.transform.rotation = Quaternion.RotateTowards(behavior.transform.rotation, toTargetQuat, maxDegreesPerSecond * Time.deltaTime);
-
-            behavior.body.velocity = Vector3.Normalize(behavior.transform.forward) * 10;
 
             yield return null;
         }
