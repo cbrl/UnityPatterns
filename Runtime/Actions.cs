@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 
@@ -176,19 +176,20 @@ namespace Patterns.Actions
                 }
                 else // If non-instant change is desired, then lerp between the start/end rotation over time
                 {
-                    var elapsedTime = 0.0f;
+                    var initTime = Time.realtimeSinceStartup;
+                    var currentTime = initTime;
                     var initVelocity = Vector3.Dot(behavior.transform.forward, behavior.body.velocity);
 
-                    while (elapsedTime < timeToChange)
+                    while ((currentTime - initTime) < timeToChange)
                     {
                         var forward = Vector3.Normalize(behavior.transform.forward);
-						var lerpPercent = System.Math.Max(elapsedTime * timeFactor, 1.0f);
+						var lerpPercent = System.Math.Min((currentTime - initTime) * timeFactor, 1.0f);
 
                         behavior.body.velocity = forward * Mathf.Lerp(initVelocity, velocity, lerpPercent);
 
-                        elapsedTime += Time.deltaTime;
+                        currentTime = Time.realtimeSinceStartup;
 
-                        yield return new WaitForFixedUpdate();
+                        yield return null;
                     }
 
 					// Set final velocity. While loop above can skip last increment.
