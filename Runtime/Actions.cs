@@ -104,33 +104,33 @@ namespace Patterns.Actions
         [Tooltip("An optional pattern to give the newly spawned object")]
         public Pattern pattern = null;
 
-		[Tooltip("The offset of the spawned object relative to the object this pattern is attached to.")]
+        [Tooltip("The offset of the spawned object relative to the object this pattern is attached to.")]
         public Vector3 offset = Vector3.zero;
 
-		[Tooltip("The amount by which the offset will increase on each iteration, if this action is part of a loop.")]
-		public Vector3 offsetIncrement = Vector3.zero;
+        [Tooltip("The amount by which the offset will increase on each iteration, if this action is part of a loop.")]
+        public Vector3 offsetIncrement = Vector3.zero;
 
-		[Tooltip("The maximum offset of the spawned object.")]
-		public Vector3 offsetMax = Vector3.positiveInfinity;
+        [Tooltip("The maximum offset of the spawned object.")]
+        public Vector3 offsetMax = Vector3.positiveInfinity;
 
-		[Tooltip("The rotation of the spawned object relative to the object this pattern is attached to.")]
+        [Tooltip("The rotation of the spawned object relative to the object this pattern is attached to.")]
         public Vector3 rotation = Vector3.zero;
 
-		[Tooltip("The amount by which the rotation will increase on each iteration, if this action is part of a loop.")]
-		public Vector3 rotationIncrement = Vector3.zero;
+        [Tooltip("The amount by which the rotation will increase on each iteration, if this action is part of a loop.")]
+        public Vector3 rotationIncrement = Vector3.zero;
 
-		[Tooltip("The maximum rotation of the spawned object.")]
-		public Vector3 rotationMax = Vector3.positiveInfinity;
+        [Tooltip("The maximum rotation of the spawned object.")]
+        public Vector3 rotationMax = Vector3.positiveInfinity;
 
-		private int loopCount = 0;
+        private int loopCount = 0;
 
         public override IEnumerator Run(PatternBehavior behavior)
-		{
+        {
 
             var obj = Object.Instantiate(prefab);
 
-			var newOffset = Vector3.Min(offset + (offsetIncrement * loopCount), offsetMax);
-			var newRotation = Vector3.Min(rotation + (rotationIncrement * loopCount), rotationMax);
+            var newOffset = Vector3.Min(offset + (offsetIncrement * loopCount), offsetMax);
+            var newRotation = Vector3.Min(rotation + (rotationIncrement * loopCount), rotationMax);
 
             obj.transform.SetPositionAndRotation(
                 behavior.transform.position + newOffset,
@@ -148,11 +148,11 @@ namespace Patterns.Actions
                 spawnedBehavior.Run();
             }
 
-			loopCount += 1;
+            loopCount += 1;
 
             yield return null;
-		}
-	}
+        }
+    }
 
 
     [System.Serializable]
@@ -183,7 +183,7 @@ namespace Patterns.Actions
                     while ((currentTime - initTime) < timeToChange)
                     {
                         var forward = Vector3.Normalize(behavior.transform.forward);
-						var lerpPercent = System.Math.Min((currentTime - initTime) * timeFactor, 1.0f);
+                        var lerpPercent = System.Math.Min((currentTime - initTime) * timeFactor, 1.0f);
 
                         behavior.body.velocity = forward * Mathf.Lerp(initVelocity, velocity, lerpPercent);
 
@@ -192,8 +192,8 @@ namespace Patterns.Actions
                         yield return null;
                     }
 
-					// Set final velocity. While loop above can skip last increment.
-					behavior.body.velocity = Vector3.Normalize(behavior.transform.forward) * velocity;
+                    // Set final velocity. While loop above can skip last increment.
+                    behavior.body.velocity = Vector3.Normalize(behavior.transform.forward) * velocity;
                 }
             }
 

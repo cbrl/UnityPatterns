@@ -12,17 +12,17 @@ namespace Patterns
     [System.Serializable]
     public class PatternBehavior : MonoBehaviour
     {
-		public enum StartTrigger
-		{
-			None,
-			Awake,
-			Start,
-			OnEnable,
-		}
+        public enum StartTrigger
+        {
+            None,
+            Awake,
+            Start,
+            OnEnable,
+        }
 
         public Pattern pattern;
 
-		public StartTrigger trigger = StartTrigger.Start;
+        public StartTrigger trigger = StartTrigger.Start;
 
         // Will reference the owning object's RigidBody, if present.
         [HideInInspector]
@@ -43,31 +43,31 @@ namespace Patterns
 
             body = GetComponent<Rigidbody>();
 
-			if (trigger == StartTrigger.Awake && pattern)
-			{
-				Run();
-			}
+            if (trigger == StartTrigger.Awake && pattern)
+            {
+                Run();
+            }
         }
 
         void Start()
         {
-			if (trigger == StartTrigger.Start && pattern)
-			{
-				Run();
-			}
+            if (trigger == StartTrigger.Start && pattern)
+            {
+                Run();
+            }
         }
 
         void OnEnable()
         {
-			if (trigger == StartTrigger.OnEnable && pattern)
-			{
-				Run();
-			}
+            if (trigger == StartTrigger.OnEnable && pattern)
+            {
+                Run();
+            }
         }
 
         public void Run()
         {
-			StartCoroutine(pattern.Run(this));
+            StartCoroutine(pattern.Run(this));
         }
 
     }
