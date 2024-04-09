@@ -217,8 +217,6 @@ namespace Patterns.Actions
 
             behavior.transform.rotation = Quaternion.RotateTowards(behavior.transform.rotation, toTargetQuat, maxDegreesPerSecond * Time.deltaTime);
 
-            behavior.body.velocity = Vector3.Normalize(behavior.transform.forward) * 10;
-
             yield return null;
         }
     }
