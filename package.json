@@ -1,6 +1,6 @@
 {
 	"name": "com.cbrl.patterns",
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"displayName": "Patterns",
 	"description": "A framework for composing reusable patterns from arbitrary actions",
 	"unity": "2022.3",
