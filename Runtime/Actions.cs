@@ -99,10 +99,22 @@ namespace Patterns.Actions
     [System.Serializable]
     public class SpawnAction : Action
     {
+        public enum ReferenceFrame
+        {
+            Global,
+            Local
+        }
+
         public GameObject prefab;
 
         [Tooltip("An optional pattern to give the newly spawned object")]
         public Pattern pattern = null;
+
+        [Tooltip("Whether to add the new object as a child of the PatternBehavior's owner.")]
+        public bool childObject = false;
+
+        [Tooltip("The reference frame of the spawned object's offset and rotation. Global will ignore the object's rotation and scale.")]
+        public ReferenceFrame offsetFrame = ReferenceFrame.Local;
 
         [Tooltip("The offset of the spawned object relative to the object this pattern is attached to.")]
         public Vector3 offset = Vector3.zero;
@@ -129,13 +141,39 @@ namespace Patterns.Actions
 
             var obj = Object.Instantiate(prefab);
 
+            if (childObject)
+            {
+                obj.transform.SetParent(behavior.transform, worldPositionStays: false);
+            }
+
             var newOffset = Vector3.Min(offset + (offsetIncrement * loopCount), offsetMax);
             var newRotation = Vector3.Min(rotation + (rotationIncrement * loopCount), rotationMax);
 
-            obj.transform.SetPositionAndRotation(
-                behavior.transform.position + newOffset,
-                behavior.transform.rotation * Quaternion.Euler(newRotation)
-            );
+            if (offsetFrame == ReferenceFrame.Global)
+            {
+                obj.transform.SetPositionAndRotation(
+                    behavior.transform.position + newOffset,
+                    Quaternion.Euler(newRotation)
+                );
+            }
+            else
+            {
+                if (childObject)
+                {
+                    // This is dependent on the parent's scale, so the world-space method isn't used here.
+                    obj.transform.SetLocalPositionAndRotation(
+                        newOffset,
+                        Quaternion.Euler(newRotation)
+                    );
+                }
+                else
+                {
+                    obj.transform.SetPositionAndRotation(
+                        behavior.transform.position + newOffset,
+                        behavior.transform.rotation * Quaternion.Euler(newRotation)
+                    );
+                }
+            }
 
             if (pattern != null)
             {
@@ -227,7 +265,7 @@ namespace Patterns.Actions
     {
         public GameObject target;
 
-        // Maximum rate at which the object can turn towards the target
+        [Tooltip("The maximum rate at which the object can turn towards the target")]
         public float maxDegreesPerSecond = 0.0f;
 
         public override IEnumerator Run(PatternBehavior behavior)
