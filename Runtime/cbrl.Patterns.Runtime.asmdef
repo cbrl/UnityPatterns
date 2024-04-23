@@ -2,7 +2,7 @@
     "name": "cbrl.Patterns.Runtime",
     "rootNamespace": "",
     "references": [
-        "Textus.SerializeReferenceUI"
+        "MackySoft.SerializeReferenceExtensions"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
