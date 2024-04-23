@@ -29,8 +29,7 @@ namespace Patterns
     [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/Pattern", order = 1)]
     public class Pattern : ScriptableObject
     {
-        [SerializeReference]
-        [SerializeReferenceButton]
+        [SerializeReference, SubclassSelector]
         public Action[] actions = new Action[0];
 
         public IEnumerator Run(PatternBehavior behavior)

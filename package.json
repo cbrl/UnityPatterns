@@ -4,7 +4,7 @@
 	"displayName": "Patterns",
 	"description": "A framework for composing reusable patterns from arbitrary actions",
 	"unity": "2022.3",
-	"references": [
-		"com.textus-games.serialized-reference-ui"
-	]
+	"dependencies": {
+		"com.mackysoft.serializereference-extensions": "1.3.1"
+	}
 }

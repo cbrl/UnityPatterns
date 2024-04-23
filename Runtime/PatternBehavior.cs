@@ -3,8 +3,8 @@ using UnityEngine;
 
 
 // Packages that make [SerializeReference] usable
-//https://github.com/TextusGames/UnitySerializedReferenceUI
 //https://github.com/mackysoft/Unity-SerializeReferenceExtensions
+//https://github.com/TextusGames/UnitySerializedReferenceUI
 
 
 namespace Patterns
@@ -22,6 +22,7 @@ namespace Patterns
 
         public Pattern pattern;
 
+        [Tooltip("If set, the pattern will automatically run when the associated function is called.")]
         public StartTrigger trigger = StartTrigger.Start;
 
         // Will reference the owning object's RigidBody, if present.
@@ -30,17 +31,6 @@ namespace Patterns
 
         void Awake()
         {
-            if (pattern)
-            {
-                // By default, all scripts that refer to the same Pattern asset will actually refer to the same instance
-                // of a Pattern object. This is due to how ScriptableObjects work. All references to the same
-                // ScriptableObject asset will refer to a single instance of the object. This means that if any Actions
-                // inside that pattern modify their state, then those modifications will be visible in every script that
-                // uses that Pattern asset. By cloning the pattern, it can be freely changed without affecting other
-                // objects which use the same pattern.
-                pattern = pattern.Clone();
-            }
-
             body = GetComponent<Rigidbody>();
 
             if (trigger == StartTrigger.Awake && pattern)
@@ -67,7 +57,12 @@ namespace Patterns
 
         public void Run()
         {
-            StartCoroutine(pattern.Run(this));
+            // By default, all scripts that refer to the same Pattern asset will actually refer to the same instance
+            // of a Pattern object. This is because a ScriptableObject asset is actually a reference to a single global
+            // instance of the object. This means that if Actions inside that pattern modify their state, then that
+            // modified state will be visible in every script which uses that Pattern asset. By cloning the pattern, it
+            // can be freely modified without affecting other objects using the same asset.
+            StartCoroutine(pattern.Clone().Run(this));
         }
 
     }
