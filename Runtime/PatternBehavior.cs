@@ -59,9 +59,10 @@ namespace Patterns
         {
             // By default, all scripts that refer to the same Pattern asset will actually refer to the same instance
             // of a Pattern object. This is because a ScriptableObject asset is actually a reference to a single global
-            // instance of the object. This means that if Actions inside that pattern modify their state, then that
-            // modified state will be visible in every script which uses that Pattern asset. By cloning the pattern, it
-            // can be freely modified without affecting other objects using the same asset.
+            // instance of the object. This means that if the state of the pattern is modified, then that will be
+            // visible in every script which uses that Pattern asset. By cloning the pattern, it can be freely modified
+            // without affecting other objects using the same asset. However, this is not a deep copy, so nested
+            // references will still refer to the same objects. Only value types will be copied.
             StartCoroutine(pattern.Clone().Run(this));
         }
 

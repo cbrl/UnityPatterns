@@ -4,9 +4,6 @@ using UnityEngine;
 
 namespace Patterns.Actions
 {
-    /// <summary>
-    /// Run a separate pattern. The state of the pattern is reset between calls to Run().
-    /// </summary>
     [System.Serializable]
     public class RunPatternAction : Action
     {
@@ -14,24 +11,39 @@ namespace Patterns.Actions
 
         public override IEnumerator Run(PatternBehavior behavior)
         {
-            yield return pattern.Run(behavior);
+            yield return pattern.Clone().Run(behavior);
         }
     }
 
 
-    /// <summary>
-    /// Run a grouped list of actions. This class is functionally different from RunPatternAction in that the state of
-    /// the nested actions will not be reset between calls to Run().
-    /// </summary>
     [System.Serializable]
     public class ActionList : Action
     {
+        [Tooltip("Reset the state of all actions between calls to Run()")]
+        public bool resetOnRun = true;
+
         [SerializeReference, SubclassSelector]
         public Action[] actions = new Action[0];
 
         public override IEnumerator Run(PatternBehavior behavior)
         {
-            foreach (var action in actions)
+            Action[] runningActions;
+
+            if (resetOnRun)
+            {
+                runningActions = new Action[actions.Length];
+
+                for (int i = 0; i < actions.Length; i++)
+                {
+                    runningActions[i] = actions[i].Clone();
+                }
+            }
+            else
+            {
+                runningActions = actions;
+            }
+
+            foreach (var action in runningActions)
             {
                 if (!action.enabled)
                 {
@@ -144,7 +156,6 @@ namespace Patterns.Actions
 
         public override IEnumerator Run(PatternBehavior behavior)
         {
-
             var obj = Object.Instantiate(prefab);
 
             if (childObject)

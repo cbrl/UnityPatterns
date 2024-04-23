@@ -1,6 +1,4 @@
-using Patterns;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class ScriptableObjectExtension
@@ -29,12 +27,31 @@ namespace Patterns
     [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/Pattern", order = 1)]
     public class Pattern : ScriptableObject
     {
+        [Tooltip("Reset the state of all actions between calls to Run()")]
+        public bool resetOnRun = true;
+
         [SerializeReference, SubclassSelector]
         public Action[] actions = new Action[0];
 
         public IEnumerator Run(PatternBehavior behavior)
         {
-            foreach (var action in actions)
+            Action[] runningActions;
+
+            if (resetOnRun)
+            {
+                runningActions = new Action[actions.Length];
+
+                for (int i = 0; i < actions.Length; i++)
+                {
+                    runningActions[i] = actions[i].Clone();
+                }
+            }
+            else
+            {
+                runningActions = actions;
+            }
+
+            foreach (var action in runningActions)
             {
                 if (!action.enabled)
                 {
@@ -59,10 +76,14 @@ namespace Patterns
     {
         public bool enabled = true;
 
-        [SerializeField]
         [Tooltip("Wait for the action to complete before running the next action. Actions will run concurrently if false.")]
         public bool waitForCompletion = true;
 
         public abstract IEnumerator Run(PatternBehavior behavior);
+
+        public Action Clone()
+        {
+            return (Action)JsonUtility.FromJson(JsonUtility.ToJson(this), GetType());
+        }
     }
 } //namespace Patterns
