@@ -197,10 +197,14 @@ namespace Patterns.Actions
                 obj.AddComponent<PatternBehavior>().pattern = pattern.Clone();
             }
 
-            // The PatternBehavior will not automatically run the pattern since it was null when the component was created
+            // The PatternBehavior will not automatically run the pattern if the StartTrigger was Awake since the
+			// pattern was null when the component was created.
             if (obj.TryGetComponent(out PatternBehavior spawnedBehavior))
             {
-                spawnedBehavior.Run();
+				if (spawnedBehavior.trigger == PatternBehavior.StartTrigger.Awake)
+				{
+                	spawnedBehavior.Run();
+				}
             }
 
             loopCount += 1;
